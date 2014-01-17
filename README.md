@@ -27,7 +27,9 @@ Quick start
 * **Important:** Create a channel in the Red Matrix that you want to use
 	for feeds. Don't just post them to your normal channel, because then
 	all your contacts will receive the posts! Keep in mind that you might
-	not be allowed to redistribute the feed contents.
+	not be allowed to redistribute the feed contents. In most cases, it's
+	a good idea not to have that channel listed in the directory, and to
+	restrict its public posts to its connections.
 * In the home directory of the user that will run feed2red.pl, create a
 	directory called .feed2red and make it readable only to that user:
 
@@ -63,7 +65,7 @@ FeedURL=http://bar.baz/comments/feed/
 * That's it! Call feed2red.pl, and it will grab the feeds and post
 	them to your channel. When you run it first, it will post all entries
 	that are currently in a feed (last ten posts in most feeds). On every
-	subsequent call, it will only post the entries it hasn't posted yet.
+	subsequent call, it will only post new entries it hasn't posted yet.
 * You might want to set up a cronjob for that.
 	Type `crontab -e` and add a line like this:
 	`0 * * * *   /path/to/feed2red.pl`
