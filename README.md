@@ -1,7 +1,7 @@
 feed2red
 ========
 
-A Perl script to read Atom/RSS feeds and post them to a Red Matrix channel
+A Perl script to read Atom/RSS feeds and post them to Red Matrix channels
 
 Requirements
 ------------
@@ -28,7 +28,7 @@ Quick start
 	for feeds. Don't just post them to your normal channel, because then
 	all your contacts will receive the posts! Keep in mind that you might
 	not be allowed to redistribute the feed contents.
-* In the home directory of the user that will run feed2red.pl, create
+* In the home directory of the user that will run feed2red.pl, create a
 	directory called .feed2red and make it readable only to that user:
 
 ```
@@ -61,7 +61,10 @@ FeedURL=http://bar.baz/comments/feed/
 ```
 
 * That's it! Call feed2red.pl, and it will grab the feeds and post
-	them to your channel. You might want to set up a cronjob for that.
+	them to your channel. When you run it first, it will post all entries
+	that are currently in a feed (last ten posts in most feeds). On every
+	subsequent call, it will only post the entries it hasn't posted yet.
+* You might want to set up a cronjob for that.
 	Type `crontab -e` and add a line like this:
 	`0 * * * *   /path/to/feed2red.pl`
 	(/path/to/ obviously replaced by the actual path to feed2red.pl)
@@ -141,6 +144,11 @@ feedurl=https://secure.sec/encfeed/atom.xml
 showtitle=N
 ```
 
+If feed entries are later updated, and this update is reflected in a
+changed modified date, feed2red.pl will currently simply post the entry
+again. If the feed doesn't have modified dates, or only the contents are
+updated, not the date, feed2red.pl will currently ignore updates to posts.
+
 Features intended for more professional use
 -------------------------------------------
 
@@ -161,3 +169,11 @@ directories to scan for config files. This can be useful if you want to
 use config files that are automatically written by some tool and need to
 be within the root of a web server. Always keep in mind that these configs
 contain unencrypted passwords, though!
+
+Bugs
+----
+
+If you encounter any bugs, please tell me at my Red Matrix channel
+zottel@red.zottel.net (this is NOT an email address!), file an issue at the
+repository at https://github.com/zzottel/feed2red or just fix them and
+create a pull request.
