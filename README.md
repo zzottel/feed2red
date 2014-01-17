@@ -24,8 +24,8 @@ in every normal Linux distribution.
 Quick start
 -----------
 
-1. Create a channel in the Red Matrix that you want to use for feeds.
-2. In the home directory of the user that will run feed2red.pl, create
+* Create a channel in the Red Matrix that you want to use for feeds.
+* In the home directory of the user that will run feed2red.pl, create
 	directory called .feed2red and make it readable only to that user:
 
 ```
@@ -34,7 +34,7 @@ mkdir .feed2red
 chmod 0700 .feed2red
 ```
 
-3. Change to the newly created directory and create a file called
+* Change to the newly created directory and create a file called
 	feed2red.conf with the following contents:
 
 ```
@@ -57,12 +57,12 @@ FeedURL=http://foo.bar/feed/atom.xml
 FeedURL=http://bar.baz/comments/feed/
 ```
 
-4. That's it! Call feed2red.pl, and it will grab the feeds and post
+* That's it! Call feed2red.pl, and it will grab the feeds and post
 	them to your channel. You might want to set up a cronjob for that.
 	Type `crontab -e` and add a line like this:
 	`0 * * * *   /path/to/feed2red.pl`
 	(/path/to/ obviously replaced by the actual path to feed2red.pl)
-	This exmaple will call feed2red.pl every hour.
+	This example will call feed2red.pl every hour.
 
 More Details
 ------------
