@@ -1,0 +1,309 @@
+#!/usr/bin/perl -w
+use strict;
+
+my $dbFile = "$ENV{HOME}/.feed2red/db";
+my @confDirs = ("$ENV{HOME}/.feed2red/");
+
+# config variables and their default values
+my %confVars =
+	(
+	'RedServer' => '',
+	'User' => '',
+	'Password' => '',
+	'Channel' => '',
+	'FeedURL' => '',
+	'ShowTitle' => 'Y',
+	'UseShare' => 'Y'
+	);
+
+my ($response, $feed, $title, $id, $feedLink, $modified, $modUTC, $status, %feeds, %visited, %visitedToday);
+
+use LWP::UserAgent;
+use XML::Feed;
+use URI::Escape;
+use HTML::Entities;
+use Fcntl;
+use SDBM_File;
+
+# read configuration
+readConfig();
+
+# connect to DB File
+unless (tie(%visited, 'SDBM_File', $dbFile, O_RDWR | O_CREAT, 0644))
+	{
+	print STDERR "feed2red.pl: Couldn't open SDBM file '$dbFile': $!\n";
+	print STDERR "feed2red.pl: Aborted.\n";
+	exit(1);
+	}
+
+# set stuff for Red connection
+my $red = LWP::UserAgent->new();
+my $hed = HTTP::Headers->new();
+
+# parse feeds
+foreach my $norm (keys %feeds)
+	{
+	$feed = XML::Feed->parse(URI->new($feeds{$norm}[0]{FeedURL}));
+	if (!defined($feed))
+		{
+		print STDERR "Couldn't parse URL $feeds{$norm}[0]{FeedURL}: " . XML::Feed->errstr . "\n";
+		print STDERR "Skipping $#{$feeds{$norm}} channel(s) this feed should be posted to.\n";
+		next;
+		}
+	$title = $feed->title;
+
+	$feedLink = $feed->link;
+
+	foreach my $entry (reverse($feed->entries))
+		{
+		$id = "$feedLink " . $entry->id;
+
+		if (defined($entry->modified))
+			{
+			$modified = $entry->modified->epoch;
+			$modUTC = $entry->modified->clone;
+			$modUTC->set_time_zone('UTC');
+			}
+		elsif (defined($entry->issued))
+			{
+			$modified = $entry->issued->epoch;
+			$modUTC = $entry->issued->clone;
+			$modUTC->set_time_zone('UTC');
+			}
+		else
+			{
+			# if the feed doesn't define a modified or issued date, always
+			# use 1 in order to avoid dupes
+			$modified = 1;
+			$modUTC = DateTime->now;
+			}
+
+		# remember we had that id this time
+		$visitedToday{$id} = 1;
+
+		# don't post entry if we already did that
+		next if ($visited{$id} and $visited{$id} >= $modified);
+
+		# post to Red
+		foreach my $f (@{$feeds{$norm}})
+			{
+			$hed->authorization_basic($$f{User}, $$f{Password});
+			$red->default_headers($hed);
+			$status = '';
+			if (defined($entry->title) and $$f{ShowTitle} =~ /^y/i)
+				{
+				$status .= "\n[size=18][url=" . $entry->link . "]" . $entry->title . "[/url][/size]\n\n";
+				}
+			$status .= htmlToBbcode($entry->content->body);
+			if ($$f{UseShare} =~ /^y/i)
+				{
+				$status = "[share author='" . uri_escape($title) . "' profile='$feedLink' link='" . $entry->link . "' posted='$modUTC']$status\[/share]";
+				}
+			$response = $red->post("$$f{RedServer}/api/statuses/update?channel=$$f{Channel}&created=$modUTC",
+				[ status => $status ]);
+			if ($response->is_error)
+				{
+				print STDERR "feed2red.pl: Error posting to Red: " . $response->message . "\n";
+				print STDERR "feed2red.pl: Skipping id $id\n";
+				print STDERR "feed2red.pl: for channel $$f{Channel} on server $$f{RedServer}.\n";
+				next;
+				}
+
+			# if we could post successfully to at least one of the channels
+			# we call this feed entry done
+			$visited{$id} = $modified;
+			}
+		}
+	}
+
+# remove links that are not in the feed anymore from our database
+foreach $id (keys %visited)
+	{
+	next if exists($visitedToday{$id});
+	delete($visited{$id});
+	}
+
+sub htmlToBbcode
+	{
+	my $string = $_[0];
+	$string =~ s,<pre.*?>(.*?)</pre>,\[code]$1\[/code],sgi;
+	
+	# we don't want to do the rest of the changes within in the [code] parts
+	# array @parts: even elements will contain the parts outside [code]
+	# odd elements will be the code elements
+	my @parts = split(/(\[code].*?\[\/code])/s, $string);
+	my $i = -1;
+	foreach (@parts)
+		{
+		$i++;
+		# jump over odd elements
+		next if $i % 2;
+		# replace newlines by spaces
+		s/\r//sg;
+		s/\n/ /sg;
+		# replace multiple spaces by one
+		s/\s{2,}/ /g;
+		# remove leading and trailing whitespace
+		s/^\s*//;
+		s/\s*$//;
+		# remove scripts
+		s,<script(\s.*?|)>.*?</script>,,gi;
+		# remove xml (seen in feeds with HTML created by MS Office =:-0 )
+		s,<xml(\s.*?|)>.*?</xml>,,gi;
+		# remove style definitions
+		s,<style(\s.*?|)>.*?</style>,,gi;
+
+		# <h...> -> \n[size=18]\n
+		s,<h\d(\s.*?|)>(.*?)</h\d>,\n\[size=18]$2\[/size]\n,gi;
+		# <b>, <i>, <u>, <center>, <hr>, <ol>, <table>, <tr>, <td>, <th>, <ul>
+		# possibly closing tags with /, will be replaced by the same in bbcode
+		# (but lowercase)
+		s,<(/?)(b|i|u|center|hr|ol|table|tr|td|th|ul)(\s.*?|)>,\[\L$1$2],gi;
+		# <li> -> [*]
+		s,<li(\s.*?|)>,\[*],gi;
+		# <em> -> [i]
+		s,<(/?)em(\s.*?|)>,\[$1i],gi;
+		# <strong> -> [b]
+		s,<(/?)strong(\s.*?|)>,\[$1b],gi;
+		# <cite>/blockquote -> [quote]
+		s,<(/?)(cite|blockquote)(\s.*?|)>,[$1quote],gi;
+		# <del> -> [s]
+		s,<(/?)del(\s.*?|)>,[$1s],gi;
+		# <font color=...> -> [color]
+		s,<font\s.*?color="(.*?)".*?>(.*?)</font>,\[color=$1]$2\[/color],gi;
+		# <img> -> [img]
+		s,<img\s.*?src="(.*?)".*?>,\[img]$1\[/img],gi;
+		# <iframe> -> [iframe]
+		s,<iframe\s.*?src="(.*?)".*?>.*?</iframe>,\[iframe]$1\[/iframe],gi;
+		# <a href> -> [url]
+		s,<a\s.*?href="\s*(.*?)\s*".*?>(.*?)</a>,\[url=$1]$2\[/url],gi;
+		# decode HTML entities like &nbsp;, &amp;, &auml; &#039; etc.
+		$_ = decode_entities($_);
+		# <br>,<div> -> newline
+		s/<(br|div)(\s.*?|)>/\n/gi;
+		# <p> -> two newlines
+		s/<p(\s.*?|)>/\n\n/gi;
+		# remove all other html tags (including </p> and </li>, if present)
+		s/<.*?>//g;
+		}
+	return(join('', @parts));
+	}
+
+sub readConfig
+	{
+	my
+		(
+		%defConfig, %feedConfig, $curHash, $line
+		);
+	for (my $i=0; $i <= $#confDirs; $i++)
+		{
+		# don't carry defaults over to other directories
+		%defConfig = %confVars;
+		unless (chdir($confDirs[$i]))
+			{
+			print STDERR "feed2red.pl: Could not change to directory $confDirs[$i]: $!\n";
+			print STDERR "feed2red.pl: Won't read config files there.\n";
+			next;
+			}
+		foreach my $file (sort(<*.conf>, <*.feed>))
+			{
+			unless (open(FILE, $file))
+				{
+				print STDERR "feed2red.pl: Could not open file $file in directory $confDirs[$i] for reading: $!\n";
+				print STDERR "feed2red.pl: Skipping this file.\n";
+				next;
+				}
+			$line = 0;
+			$curHash = undef;
+LINE:
+			while (<FILE>)
+				{
+				$line++;
+				# remove comments
+				s/^(.*?)#.*$/$1/;
+				# additional confDirs can be set anywhere
+				if (/^\s*confdir\s*=\s*(.*)\s*$/i)
+					{
+					push(@confDirs, $1);
+					next;
+					}
+				if (/^\s*\[defaults\]\s*$/i)
+					{
+					# a new defaults section
+					# if we were in a feed section before, save that feed
+					if (defined($curHash) and $curHash == \%feedConfig)
+						{
+						saveFeed($file, $line, \%defConfig, \%feedConfig);
+						}
+					# Reset defaults
+					%defConfig = %confVars;
+					# switch hash to write to to %defConfig
+					$curHash = \%defConfig;
+					next;
+					}
+				if (/^\s*\[feed\]\s*$/i)
+					{
+					# a new feed section
+					# if we were not in a defaults section before,
+					# and if this isn't our first entry,
+					# save the feed we read before
+					if (defined($curHash) and $curHash != \%defConfig)
+						{
+						saveFeed($file, $line, \%defConfig, \%feedConfig);
+						}
+					# Set defaults
+					%feedConfig = %defConfig;
+					# switch hash to write to to %feedConfig
+					$curHash = \%feedConfig;
+					next;
+					}
+
+				# read config lines
+				foreach my $key (keys %confVars)
+					{
+					if (/^\s*$key\s*=\s*(.*)\s*$/i)
+						{
+						$$curHash{$key} = $1;
+						next LINE;
+						}
+					}
+				}
+			# save last feed
+			if ($curHash == \%feedConfig)
+				{
+				saveFeed($file, $line, \%defConfig, \%feedConfig);
+				}
+			}
+		}
+	}
+
+sub saveFeed
+	{
+	my ($file, $line, $defConfig, $feedConfig) = @_;
+	my $normalized;
+
+	foreach my $key (keys %confVars)
+		{
+		if ($$feedConfig{$key} eq '')
+			{
+			if ($$defConfig{$key} eq '')
+				{
+				print STDERR "feed2red.pl: Error in [FEED] section before line $line in file $file:\n";
+				print STDERR "feed2red.pl: No $key line found, and no default for $key available from previous [DEFAULTS] section.\n";
+				print STDERR "feed2red.pl: Skipping this feed.\n";
+				return 0;
+				}
+			$$feedConfig{$key} = $$defConfig{$key};
+			}
+		}
+	# we only want to fetch every feed once
+	# we hope that interchanging http/https and having trailing slashes or not
+	# will always give us the same feed
+	$normalized = $$feedConfig{FeedURL};
+	$normalized =~ s,^https?\://,,;
+	$normalized =~ s,/+$,,;
+	# copy the hash, because we have a reference here that will be overwritten
+	my %hashCopy = %{$feedConfig};
+	push(@{$feeds{$normalized}}, \%hashCopy);
+	return 1;
+	}
