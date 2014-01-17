@@ -86,7 +86,7 @@ comment.
 If you want the same feed to be posted to mutiple channels, create
 multiple [FEED] sections with the same FeedURL, but different Channels.
 feed2red.pl will parse the feed only once and then post it to all channels
-where the FeedURL in [FEED] section matches.
+where the FeedURL in the [FEED] section matches.
 
 Available config variables
 
@@ -160,8 +160,13 @@ are a few feeds for certain users. feed2red.pl doesn't care which
 configuration goes into a .conf or a .feed file, these are just names to
 allow clearer file naming.
 
+You can think of it like all config files in a config directory being
+merged to one file in alphabetical order.
+
 Note that when a new [DEFAULTS] section is encountered, all previous
-defaults are reset.
+defaults are reset. The same is true when feed2red.pl switches to another
+config directory, i.e. [DEFAULTS] are not carried over from one directory
+to another.
 
 With `confDir=/additional/path/to/config/files/`, which can be set
 anywhere in a config file and also multiple times, you can add additional
