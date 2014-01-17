@@ -1,3 +1,4 @@
+# put this file into ~/.feed2red/ as feed2red.conf
 [DEFAULTS]
 redserver=https://the.red.server
 user=foo@bar.baz
