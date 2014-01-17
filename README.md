@@ -24,7 +24,10 @@ in every normal Linux distribution.
 Quick start
 -----------
 
-* Create a channel in the Red Matrix that you want to use for feeds.
+* **Important:** Create a channel in the Red Matrix that you want to use
+	for feeds. Don't just post them to your normal channel, because then
+	all your contacts will receive the posts! Keep in mind that you might
+	not be allowed to redistribute the feed contents.
 * In the home directory of the user that will run feed2red.pl, create
 	directory called .feed2red and make it readable only to that user:
 
