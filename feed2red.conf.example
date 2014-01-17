@@ -1,0 +1,21 @@
+[DEFAULTS]
+redserver=https://the.red.server
+user=foo@bar.baz
+password=sdhgkasd
+channel=feeds
+
+[FEED]
+# FeedURL must be the actual URL of a feed, not of a page that has a feed!
+feedurl=http://hmpf.grmbl.com/feeds/rss/
+
+[FEED]
+feedurl=http://a.b.com/c/d
+channel=abc # posted to different channel
+# don't use [share] tag for this feed
+useshare=N
+
+[FEED]
+feedurl=https://secure.sec/encfeed/atom.xml
+# no channel variable, this feed will go to the feeds channel again!
+# don't show entry titles
+showtitle=N
