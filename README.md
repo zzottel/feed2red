@@ -79,8 +79,8 @@ You can set every config value you want in a [DEFAULTS] section, even
 FeedURL, though that doesn't make much sense in most cases. You can then
 override them in each [FEED] section with values specific for that feed.
 
-Every [FEED] section inherits everything from the previous [DEFAULTS] section,
-but nothing from previous [FEED] sections.
+Every [FEED] section inherits everything from the latest [DEFAULTS]
+section, but nothing from previous [FEED] sections.
 
 Case doesn't matter. Comment sign is # and makes the rest of the line a
 comment.
