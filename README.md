@@ -69,15 +69,15 @@ FeedURL=http://bar.baz/comments/feed/
 * You might want to set up a cronjob for that.
 	Type `crontab -e` and add a line like this:
 	`0 * * * *   /path/to/feed2red.pl`
-	(/path/to/ obviously replaced by the actual path to feed2red.pl)
+	(/path/to/ obviously replaced by the actual path to feed2red.pl.)
 	This example will call feed2red.pl every hour.
 
 More Details
 ------------
 
 You can set every config value you want in a [DEFAULTS] section, even
-FeedURL, though that doesn't make sense. You can then override them in
-each [FEED] section with values specific for that feed.
+FeedURL, though that doesn't make much sense in most cases. You can then
+override them in each [FEED] section with values specific for that feed.
 
 Every [FEED] section inherits everything from the previous [DEFAULTS] section,
 but nothing from previous [FEED] sections.
@@ -90,7 +90,7 @@ multiple [FEED] sections with the same FeedURL, but different Channels.
 feed2red.pl will parse the feed only once and then post it to all channels
 where the FeedURL in the [FEED] section matches.
 
-Available config variables
+**Available config variables:**
 
 **RedServer** (required, default empty)
 The Red server to post to.
