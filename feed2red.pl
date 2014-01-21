@@ -47,7 +47,7 @@ foreach my $norm (keys %feeds)
 	if (!defined($feed))
 		{
 		print STDERR "Couldn't parse URL $feeds{$norm}[0]{FeedURL}: " . XML::Feed->errstr . "\n";
-		print STDERR "Skipping $#{$feeds{$norm}} channel(s) this feed should be posted to.\n";
+		print STDERR "Skipping " . scalar(@{$feeds{$norm}}) . " channel(s) this feed should be posted to.\n";
 		next;
 		}
 	$title = $feed->title;
