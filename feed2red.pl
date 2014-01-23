@@ -17,7 +17,7 @@ my %confVars =
 	'UseContentHash' => 'N',
 	);
 
-my ($response, $feed, $title, $id, $hash, $feedLink, $modified, $modUTC, $status, %feeds, %visited, %visitedToday, %error);
+my ($response, $feed, $title, $eTitle, $id, $hash, $feedLink, $modified, $modUTC, $status, %feeds, %visited, %visitedToday, %error);
 
 use LWP::UserAgent;
 use XML::Feed;
@@ -109,7 +109,9 @@ foreach my $norm (keys %feeds)
 			$status = '';
 			if (defined($entry->title) and $$f{ShowTitle} =~ /^y/i)
 				{
-				$status .= "\n[size=18][url=" . $entry->link . "]" . $entry->title . "[/url][/size]\n\n";
+				$eTitle = $entry->title;
+				$eTitle =~ s/^\s+|\s+$//g;
+				$status .= "\n[size=18][url=" . $entry->link . "]${eTitle}[/url][/size]\n\n";
 				}
 			$status .= htmlToBbcode($entry->content->body);
 			if ($$f{UseShare} =~ /^y/i)
