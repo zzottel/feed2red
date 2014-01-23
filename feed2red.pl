@@ -13,10 +13,11 @@ my %confVars =
 	'Channel' => '',
 	'FeedURL' => '',
 	'ShowTitle' => 'Y',
-	'UseShare' => 'Y'
+	'UseShare' => 'Y',
+	'UseContentHash' => 'N',
 	);
 
-my ($response, $feed, $title, $id, $feedLink, $modified, $modUTC, $status, %feeds, %visited, %visitedToday);
+my ($response, $feed, $title, $id, $hash, $feedLink, $modified, $modUTC, $status, %feeds, %visited, %visitedToday, %error);
 
 use LWP::UserAgent;
 use XML::Feed;
@@ -24,6 +25,7 @@ use URI::Escape;
 use HTML::Entities;
 use Fcntl;
 use SDBM_File;
+use Digest::SHA qw(sha1_base64);
 
 # read configuration
 readConfig();
@@ -48,6 +50,7 @@ foreach my $norm (keys %feeds)
 		{
 		print STDERR "Couldn't parse URL $feeds{$norm}[0]{FeedURL}: " . XML::Feed->errstr . "\n";
 		print STDERR "Skipping " . scalar(@{$feeds{$norm}}) . " channel(s) this feed should be posted to.\n";
+		$error{$norm} = 1;
 		next;
 		}
 	$title = $feed->title;
@@ -56,7 +59,7 @@ foreach my $norm (keys %feeds)
 
 	foreach my $entry (reverse($feed->entries))
 		{
-		$id = "$feedLink " . $entry->id;
+		$hash = '';
 
 		if (defined($entry->modified))
 			{
@@ -78,15 +81,28 @@ foreach my $norm (keys %feeds)
 			$modUTC = DateTime->now;
 			}
 
-		# remember we had that id this time
-		$visitedToday{$id} = 1;
-
-		# don't post entry if we already did that
-		next if ($visited{$id} and $visited{$id} >= $modified);
-
 		# post to Red
 		foreach my $f (@{$feeds{$norm}})
 			{
+			# create hash only once per entry, and only if required
+			if ($$f{UseContentHash} =~ /^y/i)
+				{
+				$hash = sha1_base64($entry->content->body) if $hash eq '';
+				$id = "$norm $hash";
+				}
+			else
+				{
+				$id = "$norm " . $entry->id;
+				}
+
+			# remember we had that id this time
+			$visitedToday{$id} = 1;
+
+			# don't post entry if we already did that
+			# check only now because some users might check by content
+			# while others check by date
+			next if ($visited{$id} and $visited{$id} >= $modified);
+
 			$hed->authorization_basic($$f{User}, $$f{Password});
 			$red->default_headers($hed);
 			$status = '';
@@ -120,6 +136,9 @@ foreach my $norm (keys %feeds)
 foreach $id (keys %visited)
 	{
 	next if exists($visitedToday{$id});
+	# don't delete entries from database if we couldn't reach that feed
+	$id =~ /^(.*?) /;
+	next if $error{$1};
 	delete($visited{$id});
 	}
 
