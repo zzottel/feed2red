@@ -114,6 +114,13 @@ the URL of a page that has a feed!
 If set to Y, the title of a feed entry will be added to the Red post. If
 set to any other value, e.g. N, the title of a feed entry will be ignored.
 
+**UseContentHash** (optional, default N)
+If set to Y, the changed status of an entry is not determined by issued or
+modified date, but by saving a hash of the contents of every entry. If the
+contents were changed, the entry is posted again. Be careful, this might
+lead to double posts if a feed contains ads that are different whenever we
+fetch it, or other similarly dynamic content.
+
 **UseShare** (optional, default Y)
 If set to Y, the feed entries will be posted using Red's [share] tag. This
 is useful if you want to have several feeds posted to the same channel, as
@@ -147,9 +154,14 @@ showtitle=N
 ```
 
 If feed entries are later updated, and this update is reflected in a
-changed modified date, feed2red.pl will currently simply post the entry
-again. If the feed doesn't have modified dates, or only the contents are
-updated, not the date, feed2red.pl will currently ignore updates to posts.
+changed issued or modified date, feed2red.pl will currently simply post
+the entry again. If the feed doesn't have modified dates, or only the
+contents are updated, not the date, feed2red.pl will currently ignore
+updates to posts.
+
+If you use UseContentHash, not the issued/modified date is relevant, but
+whether the contents of the entry have changed. Still, if they have
+changed, a new post is generated.
 
 Features intended for more professional use
 -------------------------------------------
