@@ -54,6 +54,7 @@ foreach my $norm (keys %feeds)
 		next;
 		}
 	$title = $feed->title;
+	$title =~ s/^\s+|\s+$//g;
 
 	$feedLink = $feed->link;
 
