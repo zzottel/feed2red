@@ -82,6 +82,16 @@ foreach my $norm (keys %feeds)
 			$modUTC = DateTime->now;
 			}
 
+		if (defined($entry->title))
+			{
+			$eTitle = $entry->title;
+			$eTitle =~ s/^\s+|\s+$//g;
+			}
+		else
+			{
+			$eTitle = '';
+			}
+
 		# post to Red
 		foreach my $f (@{$feeds{$norm}})
 			{
@@ -107,10 +117,8 @@ foreach my $norm (keys %feeds)
 			$hed->authorization_basic($$f{User}, $$f{Password});
 			$red->default_headers($hed);
 			$status = '';
-			if (defined($entry->title) and $$f{ShowTitle} =~ /^y/i)
+			if ($eTitle and $$f{ShowTitle} =~ /^y/i)
 				{
-				$eTitle = $entry->title;
-				$eTitle =~ s/^\s+|\s+$//g;
 				$status .= "\n[size=18][url=" . $entry->link . "]${eTitle}[/url][/size]\n\n";
 				}
 			$status .= htmlToBbcode($entry->content->body);
