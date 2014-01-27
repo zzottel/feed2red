@@ -14,6 +14,7 @@ feed2red.pl uses the following Perl modules:
 * HTML::Entities
 * Fcntl
 * SDBM_File
+* Digest::SHA
 
 You will probably have to install some of them. If you're not sure which,
 just start feed2red.pl from the command line, and Perl will tell you.
@@ -192,7 +193,7 @@ contain unencrypted passwords, though!
 Bugs
 ----
 
-If you encounter any bugs, please tell me at my Red Matrix channel
-zottel@red.zottel.net (this is NOT an email address!), file an issue at the
+If you encounter any bugs, please report them at the Red Matrix forum
+feed2red@red.zottel.net (this is NOT an email address!), file an issue at the
 repository at https://github.com/zzottel/feed2red or just fix them and
 create a pull request.
