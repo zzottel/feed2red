@@ -124,7 +124,7 @@ foreach my $norm (keys %feeds)
 			$status .= htmlToBbcode($entry->content->body);
 			if ($$f{UseShare} =~ /^y/i)
 				{
-				$status = "[share author='" . uri_escape($title) . "' profile='$feedLink' link='" . $entry->link . "' posted='$modUTC']$status\[/share]";
+				$status = "[share author='" . uri_escape_utf8($title) . "' profile='$feedLink' link='" . $entry->link . "' posted='$modUTC']$status\[/share]";
 				}
 			$response = $red->post("$$f{RedServer}/api/statuses/update?channel=$$f{Channel}&created=$modUTC",
 				[ status => $status ]);
@@ -156,6 +156,8 @@ foreach $id (keys %visited)
 sub htmlToBbcode
 	{
 	my $string = $_[0];
+	return '' unless $string;
+
 	$string =~ s,<pre.*?>(.*?)</pre>,\[code]$1\[/code],sgi;
 	
 	# we don't want to do the rest of the changes within in the [code] parts
