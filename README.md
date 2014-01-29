@@ -3,6 +3,9 @@ feed2red
 
 A Perl script to read Atom/RSS feeds and post them to Red Matrix channels
 
+For news and support, please join the Red Forum at
+https://red.zottel.net/channel/feed2red .
+
 Requirements
 ------------
 
