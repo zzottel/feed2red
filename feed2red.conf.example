@@ -20,3 +20,6 @@ feedurl=https://secure.sec/encfeed/atom.xml
 # no channel variable, this feed will go to the feeds channel again!
 # don't show entry titles
 showtitle=N
+# expire posts after 7 days (Content Expiration must be enabled in the
+# channel's Additional Features settings!)
+expiredays=7

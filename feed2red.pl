@@ -15,9 +15,10 @@ my %confVars =
 	'ShowTitle' => 'Y',
 	'UseShare' => 'Y',
 	'UseContentHash' => 'N',
+	'ExpireDays' => 'N',
 	);
 
-my ($response, $feed, $title, $eTitle, $body, $id, $hash, $feedLink, $modified, $modUTC, $status, %feeds, %visited, %visitedToday, %error);
+my ($response, $feed, $title, $eTitle, $body, $expire, $id, $hash, $feedLink, $modified, $modUTC, $status, %feeds, %visited, %visitedToday, %error);
 
 use LWP::UserAgent;
 use XML::Feed;
@@ -135,8 +136,17 @@ foreach my $norm (keys %feeds)
 				{
 				$status = "[share author='" . uri_escape_utf8($title) . "' profile='$feedLink' link='" . $entry->link . "' posted='$modUTC']$status\[/share]";
 				}
-			$response = $red->post("$$f{RedServer}/api/statuses/update?channel=$$f{Channel}&created=$modUTC",
-				[ status => $status ]);
+			if ($$f{ExpireDays} =~ /^\d+$/)
+				{
+				$expire = DateTime->now->add(days => $$f{ExpireDays});
+				$response = $red->post("$$f{RedServer}/api/statuses/update?channel=$$f{Channel}&created=$modUTC&expire=$expire",
+					[ status => $status ]);
+				}
+			else
+				{
+				$response = $red->post("$$f{RedServer}/api/statuses/update?channel=$$f{Channel}&created=$modUTC",
+					[ status => $status ]);
+				}
 			if ($response->is_error)
 				{
 				print STDERR "feed2red.pl: Error posting to Red: " . $response->message . "\n";
