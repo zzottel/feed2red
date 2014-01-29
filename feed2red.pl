@@ -17,7 +17,7 @@ my %confVars =
 	'UseContentHash' => 'N',
 	);
 
-my ($response, $feed, $title, $eTitle, $id, $hash, $feedLink, $modified, $modUTC, $status, %feeds, %visited, %visitedToday, %error);
+my ($response, $feed, $title, $eTitle, $body, $id, $hash, $feedLink, $modified, $modUTC, $status, %feeds, %visited, %visitedToday, %error);
 
 use LWP::UserAgent;
 use XML::Feed;
@@ -92,13 +92,22 @@ foreach my $norm (keys %feeds)
 			$eTitle = '';
 			}
 
+		$body = $entry->content->body;
+
 		# post to Red
 		foreach my $f (@{$feeds{$norm}})
 			{
 			# create hash only once per entry, and only if required
 			if ($$f{UseContentHash} =~ /^y/i)
 				{
-				$hash = sha1_base64($entry->content->body) if $hash eq '';
+				if ($body)
+					{
+					$hash = sha1_base64($body) if $hash eq '';
+					}
+				else
+					{
+					$hash = 'X';
+					}
 				$id = "$norm $hash";
 				}
 			else
@@ -121,7 +130,7 @@ foreach my $norm (keys %feeds)
 				{
 				$status .= "\n[size=18][url=" . $entry->link . "]${eTitle}[/url][/size]\n\n";
 				}
-			$status .= htmlToBbcode($entry->content->body);
+			$status .= htmlToBbcode($body);
 			if ($$f{UseShare} =~ /^y/i)
 				{
 				$status = "[share author='" . uri_escape_utf8($title) . "' profile='$feedLink' link='" . $entry->link . "' posted='$modUTC']$status\[/share]";
