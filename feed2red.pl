@@ -320,7 +320,7 @@ LINE:
 					}
 				}
 			# save last feed
-			if ($curHash == \%feedConfig)
+			if (defined($curHash) and $curHash == \%feedConfig)
 				{
 				saveFeed($file, $line, \%defConfig, \%feedConfig);
 				}
