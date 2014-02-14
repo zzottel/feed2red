@@ -133,13 +133,10 @@ value, e.g. N, the [share] tag is not used, which makes sense if the
 contents of only one feed are posted to a channel.
 
 **ExpireDays** (optional, default N)
-If set to a number, posts from that feed will expire in Red after <number>
+If set to a number, posts from that feed will expire in Red after \<number\>
 days. Otherwise, no expiry date is set (default). Note that this will only
 work if Content Expiration is enabled in the Additional Features settings
-of the channel. Expiration date is expected with the timezone that is set
-for the channel in Red, and this script can't know that timezone. So
-expect a deviation of some hours if the script is run in another timezone
-than the one that is set for the channel.
+of the channel.
 
 Here's a more complex example for a .conf file:
 

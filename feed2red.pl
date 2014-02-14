@@ -138,7 +138,7 @@ foreach my $norm (keys %feeds)
 				}
 			if ($$f{ExpireDays} =~ /^\d+$/)
 				{
-				$expire = DateTime->now->add(days => $$f{ExpireDays});
+				$expire = uri_escape_utf8("+$$f{ExpireDays} days");
 				$response = $red->post("$$f{RedServer}/api/statuses/update?channel=$$f{Channel}&created=$modUTC&expire=$expire",
 					[ status => $status ]);
 				}
