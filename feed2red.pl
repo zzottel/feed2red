@@ -46,11 +46,11 @@ my $hed = HTTP::Headers->new();
 # parse feeds
 foreach my $norm (keys %feeds)
 	{
-	$feed = XML::Feed->parse(URI->new($feeds{$norm}[0]{FeedURL}));
+	$feed = eval('XML::Feed->parse(URI->new($feeds{$norm}[0]{FeedURL}));');
 	if (!defined($feed))
 		{
-		print STDERR "Couldn't parse URL $feeds{$norm}[0]{FeedURL}: " . XML::Feed->errstr . "\n";
-		print STDERR "Skipping " . scalar(@{$feeds{$norm}}) . " channel(s) this feed should be posted to.\n";
+		print STDERR "feed2red.pl: Couldn't parse feed $feeds{$norm}[0]{FeedURL}: " . XML::Feed->errstr . "\n";
+		print STDERR "feed2red.pl: Skipping " . scalar(@{$feeds{$norm}}) . " channel(s) this feed should be posted to.\n";
 		$error{$norm} = 1;
 		next;
 		}
