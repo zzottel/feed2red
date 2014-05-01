@@ -49,7 +49,12 @@ foreach my $norm (keys %feeds)
 	$feed = eval('XML::Feed->parse(URI->new($feeds{$norm}[0]{FeedURL}));');
 	if (!defined($feed))
 		{
-		print STDERR "feed2red.pl: Couldn't parse feed $feeds{$norm}[0]{FeedURL}: " . XML::Feed->errstr . "\n";
+		my $errstr = XML::Feed->errstr;
+		if (!defined($errstr))
+			{
+			$errstr = '(No error message available from XML::Feed module.)';
+			}
+		print STDERR "feed2red.pl: Couldn't parse feed $feeds{$norm}[0]{FeedURL}: $errstr\n";
 		print STDERR "feed2red.pl: Skipping " . scalar(@{$feeds{$norm}}) . " channel(s) this feed should be posted to.\n";
 		$error{$norm} = 1;
 		next;
