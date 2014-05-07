@@ -16,9 +16,10 @@ my %confVars =
 	'UseShare' => 'Y',
 	'UseContentHash' => 'N',
 	'ExpireDays' => 'N',
+	'UseCurrentTime' => 'N',
 	);
 
-my ($response, $feed, $title, $eTitle, $body, $expire, $id, $hash, $feedLink, $modified, $modUTC, $status, %feeds, %visited, %visitedToday, %error);
+my ($response, $feed, $title, $eTitle, $body, $expire, $id, $hash, $feedLink, $modified, $modUTC, $postUTC, $status, %feeds, %visited, %visitedToday, %error);
 
 use LWP::UserAgent;
 use XML::Feed;
@@ -129,6 +130,16 @@ foreach my $norm (keys %feeds)
 			# while others check by date
 			next if ($visited{$id} and $visited{$id} >= $modified);
 
+			# change opst time to now if desired
+			if ($$f{UseCurrentTime} =~ /^y/i)
+				{
+				$postUTC = DateTime->now;
+				}
+			else
+				{
+				$postUTC = $modUTC;
+				}
+
 			$hed->authorization_basic($$f{User}, $$f{Password});
 			$red->default_headers($hed);
 			$status = '';
@@ -144,12 +155,12 @@ foreach my $norm (keys %feeds)
 			if ($$f{ExpireDays} =~ /^\d+$/)
 				{
 				$expire = uri_escape_utf8("+$$f{ExpireDays} days");
-				$response = $red->post("$$f{RedServer}/api/statuses/update?channel=$$f{Channel}&created=$modUTC&expire=$expire",
+				$response = $red->post("$$f{RedServer}/api/statuses/update?channel=$$f{Channel}&created=$postUTC&expire=$expire",
 					[ status => $status ]);
 				}
 			else
 				{
-				$response = $red->post("$$f{RedServer}/api/statuses/update?channel=$$f{Channel}&created=$modUTC",
+				$response = $red->post("$$f{RedServer}/api/statuses/update?channel=$$f{Channel}&created=$postUTC",
 					[ status => $status ]);
 				}
 			if ($response->is_error)

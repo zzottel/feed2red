@@ -138,6 +138,16 @@ days. Otherwise, no expiry date is set (default). Note that this will only
 work if Content Expiration is enabled in the Additional Features settings
 of the channel.
 
+**UseCurrentTime** (optional, default N)
+If set to Y, instead of using the modified or issued dates of the feed,
+the resulting post in Red will be dated with the current time when
+feed2red.pl posts it. This is useful if you don't want the posts to be
+moved down in your stream to the actual creation time of the feed item,
+which might be far enough down that you won't ever see them. This has only
+an effect on the creation time of the post itself. If UseShare is also
+enabled, the time written to the [share] tag will still reflect the time
+when the feed item was created/modified.
+
 Here's a more complex example for a .conf file:
 
 ```
@@ -149,6 +159,9 @@ channel=feeds
 
 [FEED]
 feedurl=http://hmpf.grmbl.com/feeds/rss/
+# set Red post time to the time when feed2red.pl posts the item, not to
+# the time when the feed item was created/modified
+usecurrenttime=Y
 
 [FEED]
 feedurl=http://a.b.com/c/d
