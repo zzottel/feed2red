@@ -17,6 +17,7 @@ my %confVars =
 	'UseContentHash' => 'N',
 	'ExpireDays' => 'N',
 	'UseCurrentTime' => 'N',
+	'UseBookmarks' => 'Y',
 	);
 
 my ($response, $feed, $title, $eTitle, $body, $expire, $id, $hash, $feedLink, $modified, $modUTC, $postUTC, $status, %feeds, %visited, %visitedToday, %error);
@@ -148,6 +149,10 @@ foreach my $norm (keys %feeds)
 				$status .= "\n[size=18][url=" . $entry->link . "]${eTitle}[/url][/size]\n\n";
 				}
 			$status .= htmlToBbcode($body);
+			if ($$f{UseBookmarks} =~ /^y/i)
+				{
+				$status =~ s/\[url/\#\^\[url/g;
+				}
 			if ($$f{UseShare} =~ /^y/i)
 				{
 				$status = "[share author='" . uri_escape_utf8($title) . "' profile='$feedLink' link='" . $entry->link . "' posted='$modUTC']$status\[/share]";

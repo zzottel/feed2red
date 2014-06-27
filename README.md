@@ -148,6 +148,11 @@ an effect on the creation time of the post itself. If UseShare is also
 enabled, the time written to the [share] tag will still reflect the time
 when the feed item was created/modified.
 
+**UseBookmarks** (optional, default Y)
+If set to Y, all [url] tags will be prepended with #^ so that they can be
+used with Red's bookmarks feature. Set to any other value, e.g. N, if you
+don't like the #^s in the text.
+
 Here's a more complex example for a .conf file:
 
 ```
@@ -168,6 +173,8 @@ feedurl=http://a.b.com/c/d
 channel=abc # posted to different channel
 # don't use [share] tag for this feed
 useshare=N
+# don't use bookmark tags
+usebookmarks=n
 
 [FEED]
 feedurl=https://secure.sec/encfeed/atom.xml

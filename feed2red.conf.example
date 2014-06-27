@@ -14,6 +14,8 @@ feedurl=http://a.b.com/c/d
 channel=abc # posted to different channel
 # don't use [share] tag for this feed
 useshare=N
+# don't use bookmark tags (#^) for this feed
+usebookmarks=n
 
 [FEED]
 feedurl=https://secure.sec/encfeed/atom.xml
