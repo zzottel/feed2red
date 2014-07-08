@@ -104,7 +104,12 @@ The user name to use when authenticating to the Red server. This is the
 email address you enter when logging in.
 
 **Password** (required, default empty)
-The password to use when authenticating to the Red server.
+The password to use when authenticating to the Red server. Note that a #
+in the password will be interpreted as the beginning of a comment. This is
+a known bug, but it will be hard to solve for the case that someone might
+want to write a comment to the end of the password line. For the time
+being, please use passwords without hash signs (#). Please drop me a line
+if this is unacceptable to you; I'll try to find a solution then.
 
 **Channel** (required, default empty)
 The nick name of the channel to post to. In
