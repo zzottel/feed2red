@@ -155,7 +155,7 @@ foreach my $norm (keys %feeds)
 				}
 			if ($$f{UseQuotes} =~ /^n/i)	
 				{
-				$status .= htmlToBbcode($body);
+				$status .= "\n\n" . htmlToBbcode($body);
 				}
 			if ($$f{UseBookmarks} =~ /^y/i)
 				{
@@ -163,7 +163,7 @@ foreach my $norm (keys %feeds)
 				}
 			if ($$f{UseShare} =~ /^y/i)
 				{
-				$status = "[share author='" . uri_escape_utf8($title) . "' profile='$feedLink' link='" . $entry->link . "' posted='$modUTC']\n[url=" . $entry->link . "]${eTitle}[/url]" . htmlToBbcode($body) . "[/share]";
+				$status = "[share author='" . uri_escape_utf8($title) . "' profile='$feedLink' link='" . $entry->link . "' posted='$modUTC']\n[url=" . $entry->link . "]${eTitle}[/url]\n\n" . htmlToBbcode($body) . "[/share]";
 				}
 			if ($$f{ExpireDays} =~ /^\d+$/)
 				{
