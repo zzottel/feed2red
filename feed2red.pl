@@ -232,7 +232,6 @@ sub htmlToBbcode
 		s,<xml(\s.*?|)>.*?</xml>,,gi;
 		# remove style definitions
 		s,<style(\s.*?|)>.*?</style>,,gi;
-
 		# <h...> -> \n\n[b]
 		s,<h\d(\s.*?|)>(.*?)</h\d>,\n\n\[b]$2\[/b],gi;
 		# <b>, <i>, <u>, <center>, <hr>, <ol>, <table>, <tr>, <td>, <th>, <ul>
@@ -253,6 +252,10 @@ sub htmlToBbcode
 		s,<(/?)del(\s.*?|)>,[$1s],gi;
 		# <font color=...> -> [color]
 		s,<font\s.*?color="(.*?)".*?>(.*?)</font>,\[color=$1]$2\[/color],gi;
+	 	# fix img src and other urls in some exotic feeds before img and urls are converted to bbcode
+		s,href="\/wiki,href="http:\/\/commons.wikimedia.org\/wiki,gi;
+	 	s,href="\/\/en,href="http:\/\/en,gi;
+		s,src="\/\/,src="http:\/\/,gi;
 		# <img> -> [img]
 		s,<img\s.*?src="(.*?)".*?>,\[img]$1\[/img]\n\n,gi;
 		# <iframe> -> [iframe]
@@ -268,7 +271,9 @@ sub htmlToBbcode
 		# other <p> -> two newlines
 		s/<p(\s.*?|)>/\n\n/gi;
 		# remove all other html tags (including </p> and </li>, if present)
-		s/<.*?>//g;
+		s/<.*?>//gi;
+		# try to remove double lines
+                s,\n\n\n,\n\n,g;
 		
 		}
 	return(join('', @parts));
