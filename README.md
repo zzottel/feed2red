@@ -158,6 +158,10 @@ If set to Y, all [url] tags will be prepended with #^ so that they can be
 used with Red's bookmarks feature. Set to any other value, e.g. N, if you
 don't like the #^s in the text.
 
+**UseQuotes** (optional, default Y when UseShare N, default N when UseShare Y)
+If set to Y, all content is put between quotes. This make sense, because you didn't wrote it. When UseShare is Y (what's the default)quotes are not used, because the share tag is another way to show people you didn't wrote it. Set this to N and UseShare to N if you don't want quotes and no share tag.
+
+
 Here's a more complex example for a .conf file:
 
 ```

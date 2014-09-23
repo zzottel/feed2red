@@ -18,6 +18,7 @@ my %confVars =
 	'ExpireDays' => 'N',
 	'UseCurrentTime' => 'N',
 	'UseBookmarks' => 'Y',
+	'UseQuotes' => 'Y',
 	);
 
 my ($response, $feed, $title, $eTitle, $body, $expire, $id, $hash, $feedLink, $modified, $modUTC, $postUTC, $status, %feeds, %visited, %visitedToday, %error);
@@ -146,16 +147,23 @@ foreach my $norm (keys %feeds)
 			$status = '';
 			if ($eTitle and $$f{ShowTitle} =~ /^y/i)
 				{
-				$status .= "\n[size=18][url=" . $entry->link . "]${eTitle}[/url][/size]\n\n";
+				$status .= "[url=" . $entry->link . "]${eTitle}[/url]";
 				}
-			$status .= htmlToBbcode($body);
+			if ($$f{UseQuotes} =~ /^y/i)	
+				{
+				$status .= "\n\n[quote]" . htmlToBbcode($body). "[/quote]";
+				}
+			if ($$f{UseQuotes} =~ /^n/i)	
+				{
+				$status .= "\n\n" . htmlToBbcode($body);
+				}
 			if ($$f{UseBookmarks} =~ /^y/i)
 				{
 				$status =~ s/\[url/\#\^\[url/g;
 				}
 			if ($$f{UseShare} =~ /^y/i)
 				{
-				$status = "[share author='" . uri_escape_utf8($title) . "' profile='$feedLink' link='" . $entry->link . "' posted='$modUTC']$status\[/share]";
+				$status = "[share author='" . uri_escape_utf8($title) . "' profile='$feedLink' link='" . $entry->link . "' posted='$modUTC']\n[url=" . $entry->link . "]${eTitle}[/url]\n\n" . htmlToBbcode($body) . "[/share]";
 				}
 			if ($$f{ExpireDays} =~ /^\d+$/)
 				{
@@ -224,9 +232,8 @@ sub htmlToBbcode
 		s,<xml(\s.*?|)>.*?</xml>,,gi;
 		# remove style definitions
 		s,<style(\s.*?|)>.*?</style>,,gi;
-
-		# <h...> -> \n[size=18]\n
-		s,<h\d(\s.*?|)>(.*?)</h\d>,\n\[size=18]$2\[/size]\n,gi;
+		# <h...> -> \n\n[b]
+		s,<h\d(\s.*?|)>(.*?)</h\d>,\n\n\[b]$2\[/b],gi;
 		# <b>, <i>, <u>, <center>, <hr>, <ol>, <table>, <tr>, <td>, <th>, <ul>
 		# possibly closing tags with /, will be replaced by the same in bbcode
 		# (but lowercase)
@@ -238,13 +245,19 @@ sub htmlToBbcode
 		# <strong> -> [b]
 		s,<(/?)strong(\s.*?|)>,\[$1b],gi;
 		# <cite>/blockquote -> [quote]
-		s,<(/?)(cite|blockquote)(\s.*?|)>,[$1quote],gi;
+		s,<(<cite|blockquote)(\s.*?|)><p>,\n[quote],gi;
+		s,<(<cite|blockquote)(\s.*?|)>\s*<p>,\n[quote],gi;
+		s,<(/?)(cite|blockquote)(\s.*?|)>,\n[$1quote],gi;		
 		# <del> -> [s]
 		s,<(/?)del(\s.*?|)>,[$1s],gi;
 		# <font color=...> -> [color]
 		s,<font\s.*?color="(.*?)".*?>(.*?)</font>,\[color=$1]$2\[/color],gi;
+	 	# fix img src and other urls in some exotic feeds before img and urls are converted to bbcode
+		s,href="\/wiki,href="http:\/\/commons.wikimedia.org\/wiki,gi;
+	 	s,href="\/\/en,href="http:\/\/en,gi;
+		s,src="\/\/,src="http:\/\/,gi;
 		# <img> -> [img]
-		s,<img\s.*?src="(.*?)".*?>,\[img]$1\[/img],gi;
+		s,<img\s.*?src="(.*?)".*?>,\[img]$1\[/img]\n\n,gi;
 		# <iframe> -> [iframe]
 		s,<iframe\s.*?src="(.*?)".*?>.*?</iframe>,\[iframe]$1\[/iframe],gi;
 		# <a href> -> [url]
@@ -253,10 +266,15 @@ sub htmlToBbcode
 		$_ = decode_entities($_);
 		# <br>,<div> -> newline
 		s/<(br|div)(\s.*?|)>/\n/gi;
-		# <p> -> two newlines
+		# first <p> -> no newline, remove
+		s/<p(\s.*?|)>//i;		
+		# other <p> -> two newlines
 		s/<p(\s.*?|)>/\n\n/gi;
 		# remove all other html tags (including </p> and </li>, if present)
-		s/<.*?>//g;
+		s/<.*?>//gi;
+		# try to remove double lines
+                s,\n\n\n,\n\n,g;
+		
 		}
 	return(join('', @parts));
 	}
