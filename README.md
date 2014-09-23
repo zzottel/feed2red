@@ -137,6 +137,15 @@ you then can see which feed a post originated from. If set to any other
 value, e.g. N, the [share] tag is not used, which makes sense if the
 contents of only one feed are posted to a channel.
 
+**UseQuote** (optional, default N)
+If set to Y, the feed entries will be posted using Red's [quote] tag. This
+is similar to UseShare above, with the difference that the feed name is not
+visible at the post. This can be useful if the source is some aggregator
+that will always show the same feed name, regardless of where the original
+item came from. feed2red.pl will not stop you if you set both UseShare and
+UseQuote, which will lead to a [quote] tag within a [share] tag, but that
+doesn't really make sense, of course.
+
 **ExpireDays** (optional, default N)
 If set to a number, posts from that feed will expire in Red after \<number\>
 days. Otherwise, no expiry date is set (default). Note that this will only
