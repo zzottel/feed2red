@@ -1,10 +1,22 @@
 feed2red
 ========
 
-A Perl script to read Atom/RSS feeds and post them to Red Matrix channels
+A Perl script to read Atom/RSS feeds and post them to RedMatrix channels
 
 For news and support, please join the Red Forum at
 https://red.zottel.net/channel/feed2red .
+
+This script was originally written at a time when the RedMatrix didn't
+support adding RSS/Atom feeds as contacts. Today, if your hub admin has
+enabled that feature, you can just put the address of a feed into the
+upper left text box on the connections page and connect to a feed as if it
+was a RedMatrix member (read only, of course).
+
+So in many cases, you won't need feed2red.pl anymore. It has a lot of
+options, though, that let you do stuff you can't do with native feeds,
+like using the [share] or the [quote] tag, having current time or feed
+item creation time as post creation time, defining post expiration times
+etc.
 
 Requirements
 ------------
