@@ -47,6 +47,9 @@ unless (tie(%visited, 'SDBM_File', $dbFile, O_RDWR | O_CREAT, 0644))
 my $red = LWP::UserAgent->new();
 my $hed = HTTP::Headers->new();
 
+# fix incorrect unicode characters in Atom feeds
+$XML::Atom::ForceUnicode = 1;
+
 # parse feeds
 foreach my $norm (keys %feeds)
 	{
