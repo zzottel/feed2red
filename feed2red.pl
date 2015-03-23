@@ -148,7 +148,7 @@ foreach my $norm (keys %feeds)
 			$status = '';
 			if ($eTitle and $$f{ShowTitle} =~ /^y/i)
 				{
-				$status .= "\n[h3][url=" . $entry->link . "]" . Encode::decode("utf8", $eTitle) . "[/url][/h3]\n";
+				$status .= "\n[h3][url=" . $entry->link . "]${eTitle}[/url][/h3]\n";
 				}
 			if ($$f{UseQuote} =~ /^y/i)
 				{
@@ -164,7 +164,7 @@ foreach my $norm (keys %feeds)
 				}
 			if ($$f{UseShare} =~ /^y/i)
 				{
-				$status = "[share author='" . Encode::decode("utf8", $title) . "' profile='$feedLink' link='" . $entry->link . "' posted='$modUTC']$status\[/share]";
+				$status = "[share author='" . uri_escape_utf8($title) . "' profile='$feedLink' link='" . $entry->link . "' posted='$modUTC']$status\[/share]";
 				}
 			if ($$f{ExpireDays} =~ /^\d+$/)
 				{
