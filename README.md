@@ -131,6 +131,17 @@ https://red.zottel.net/channel/zottelszeug, that would be zottelszeug
 The URL of the feed to parse. This must be the URL of an actual feed, not
 the URL of a page that has a feed!
 
+**CustomFeedTitle** (optional, default UNSET, which means don't use a
+custom title)
+
+If the feed is posted using the [share] tag (which is the default, see
+UseShare below), don't use the feed title given in the feed itself for the
+author parameter, but a custom title given here. Note that you don't need
+quotes ("") if you want to use several words here (see example below). If
+you want to set that in a [DEFAULTS] section, you can unset it in a [FEED]
+by setting it to the value UNSET (case matters here!). Doesn't have an
+effect if UseShare is set to anything but Y.
+
 **ShowTitle** (optional, default Y)
 If set to Y, the title of a feed entry will be added to the Red post. If
 set to any other value, e.g. N, the title of a feed entry will be ignored.
@@ -207,6 +218,8 @@ feedurl=https://secure.sec/encfeed/atom.xml
 # no channel variable, this feed will go to the feeds channel again!
 # don't show entry titles
 showtitle=N
+# Show the feed's title as "The hmpf grmbl feed"
+customfeedtitle=The hmpf grmbl feed
 # expire posts after 7 days
 expiredays=7
 ```

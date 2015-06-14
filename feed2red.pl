@@ -12,6 +12,7 @@ my %confVars =
 	'Password' => '',
 	'Channel' => '',
 	'FeedURL' => '',
+	'CustomFeedTitle' => 'UNSET',
 	'ShowTitle' => 'Y',
 	'UseShare' => 'Y',
 	'UseContentHash' => 'N',
@@ -21,7 +22,7 @@ my %confVars =
 	'UseQuote' => 'N',
 	);
 
-my ($response, $feed, $title, $eTitle, $body, $expire, $id, $hash, $feedLink, $modified, $modUTC, $postUTC, $status, %feeds, %visited, %visitedToday, %error);
+my ($response, $feed, $title, $cTitle, $eTitle, $body, $expire, $id, $hash, $feedLink, $modified, $modUTC, $postUTC, $status, %feeds, %visited, %visitedToday, %error);
 
 use LWP::UserAgent;
 use XML::Feed;
@@ -167,7 +168,15 @@ foreach my $norm (keys %feeds)
 				}
 			if ($$f{UseShare} =~ /^y/i)
 				{
-				$status = "[share author='" . uri_escape_utf8($title) . "' profile='$feedLink' link='" . $entry->link . "' posted='$modUTC']$status\[/share]";
+				if ($$f{CustomFeedTitle} ne 'UNSET')
+					{
+					$cTitle = $$f{CustomFeedTitle};
+					}
+				else
+					{
+					$cTitle = $title;
+					}
+				$status = "[share author='" . uri_escape_utf8($cTitle) . "' profile='$feedLink' link='" . $entry->link . "' posted='$modUTC']$status\[/share]";
 				}
 			if ($$f{ExpireDays} =~ /^\d+$/)
 				{

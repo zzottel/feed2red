@@ -22,6 +22,8 @@ feedurl=https://secure.sec/encfeed/atom.xml
 # no channel variable, this feed will go to the feeds channel again!
 # don't show entry titles
 showtitle=N
+# Show the feed's title as "The hmpf grmbl feed"
+customfeedtitle=The hmpf grmbl feed
 # expire posts after 7 days (Content Expiration must be enabled in the
 # channel's Additional Features settings!)
 expiredays=7
