@@ -156,11 +156,11 @@ foreach my $norm (keys %feeds)
 				}
 			if ($$f{UseQuote} =~ /^y/i)
 				{
-				$status .= '[quote]' . htmlToBbcode($body) . '[/quote]';
+				$status .= '[quote]' . htmlToBbcode($body, $feedLink) . '[/quote]';
 				}
 			else
 				{
-				$status .= htmlToBbcode($body);
+				$status .= htmlToBbcode($body, $feedLink);
 				}
 			if ($$f{UseBookmarks} =~ /^y/i)
 				{
@@ -216,8 +216,10 @@ foreach $id (keys %visited)
 
 sub htmlToBbcode
 	{
-	my $string = $_[0];
+	my ($string, $baseURL) = @_;
 	return '' unless $string;
+
+	$baseURL =~ s,^(https?://.*?/).*,$1,;
 
 	$string =~ s,<pre.*?>(.*?)</pre>,\[code]$1\[/code],sgi;
 	
@@ -269,8 +271,12 @@ sub htmlToBbcode
 		s,<img\s.*?src="(.*?)".*?>,\[img]$1\[/img]\n\n,gi;
 		# <iframe> -> [iframe]
 		s,<iframe\s.*?src="(.*?)".*?>.*?</iframe>,\[iframe]$1\[/iframe],gi;
+		# fix relative links in img and iframe tags
+		s,\[(img]|iframe])(?!http)(.*?)\[/\1,\[$1$baseURL$2\[/$1,g;
 		# <a href> -> [url]
 		s,<a\s.*?href="\s*(.*?)\s*".*?>(.*?)</a>,\[url=$1]$2\[/url],gi;
+		# fix relative links in url tags
+		s,\[url=(?!http)(.*?)],\[url=$baseURL$1],g;
 		# decode HTML entities like &nbsp;, &amp;, &auml; &#039; etc.
 		$_ = decode_entities($_);
 		# <br>,<div> -> newline
