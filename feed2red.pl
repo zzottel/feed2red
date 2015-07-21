@@ -116,7 +116,7 @@ foreach my $norm (keys %feeds)
 				{
 				if ($body)
 					{
-					$hash = sha1_base64($body) if $hash eq '';
+					$hash = sha1_base64(encode('UTF-8', $body)) if $hash eq '';
 					}
 				else
 					{
