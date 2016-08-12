@@ -64,7 +64,7 @@ chmod 0700 .feed2red
 # replace the values with the configuration you need, obviously
 RedServer=https://your.hubzilla.server
 User=your@user.name # email address like at Hubzilla login
-Password=yOuRrEdPaSsWoRd
+Password=yOuRhUbZiLlaPaSsWoRd
 # the Channel is the short nickname of the channel
 # in https://red.zottel.net/channel/zottelszeug , it would be zottelszeug
 Channel=redchannel
