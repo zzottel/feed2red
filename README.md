@@ -66,8 +66,8 @@ RedServer=https://your.hubzilla.server
 User=your@user.name # email address like at Hubzilla login
 Password=yOuRhUbZiLlaPaSsWoRd
 # the Channel is the short nickname of the channel
-# in https://red.zottel.net/channel/zottelszeug , it would be zottelszeug
-Channel=redchannel
+# in https://hubzilla.zottel.net/channel/zottelszeug , it would be zottelszeug
+Channel=hubzillachannel
 
 [FEED]
 # the FeedURL is the actual address of a feed, NOT a normal web page that
@@ -126,7 +126,7 @@ if this is unacceptable to you; I'll try to find a solution then.
 
 **Channel** (required, default empty)
 The nick name of the channel to post to. In
-https://red.zottel.net/channel/zottelszeug, that would be zottelszeug
+https://hubzilla.zottel.net/channel/zottelszeug, that would be zottelszeug
 
 **FeedURL** (required, default empty)
 The URL of the feed to parse. This must be the URL of an actual feed, not
@@ -195,7 +195,7 @@ Here's a more complex example for a .conf file:
 
 ```
 [DEFAULTS]
-redserver=https://the.red.server
+redserver=https://the.hubzilla.server
 user=foo@bar.baz
 password=sdhgkasd
 channel=feeds
@@ -265,6 +265,6 @@ Bugs
 ----
 
 If you encounter any bugs, please report them at the Hubzilla forum
-feed2red@red.zottel.net (this is NOT an email address!), file an issue at the
+feed2red@hubzilla.zottel.net (this is NOT an email address!), file an issue at the
 repository at https://github.com/zzottel/feed2red or just fix them and
 create a pull request.
