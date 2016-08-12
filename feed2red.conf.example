@@ -1,6 +1,6 @@
 # put this file into ~/.feed2red/ as feed2red.conf
 [DEFAULTS]
-redserver=https://the.red.server
+redserver=https://the.hubzilla.server
 user=foo@bar.baz
 password=sdhgkasd
 channel=feeds
