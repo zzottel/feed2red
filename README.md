@@ -1,16 +1,17 @@
 feed2red
 ========
 
-A Perl script to read Atom/RSS feeds and post them to RedMatrix channels
+A Perl script to read Atom/RSS feeds and post them to Hubzilla (formerly
+RedMatrix) channels
 
-For news and support, please join the Red Forum at
-https://red.zottel.net/channel/feed2red .
+For news and support, please join the Hubzilla Forum at
+https://hubzilla.zottel.net/channel/feed2red .
 
-This script was originally written at a time when the RedMatrix didn't
-support adding RSS/Atom feeds as contacts. Today, if your hub admin has
-enabled that feature, you can just put the address of a feed into the
-upper left text box on the connections page and connect to a feed as if it
-was a RedMatrix member (read only, of course).
+This script was originally written at a time when the Hubzilla didn't support
+adding RSS/Atom feeds as contacts. Today, if your hub admin has enabled that
+feature, you can just put the address of a feed into the upper left text box on
+the connections page and connect to a feed as if it was a Hubzilla member (read
+only, of course).
 
 So in many cases, you won't need feed2red.pl anymore. It has a lot of
 options, though, that let you do stuff you can't do with native feeds,
@@ -40,12 +41,12 @@ in every normal Linux distribution.
 Quick start
 -----------
 
-* **Important:** Create a channel in the Red Matrix that you want to use
-	for feeds. Don't just post them to your normal channel, because then
-	all your contacts will receive the posts! Keep in mind that you might
-	not be allowed to redistribute the feed contents. In most cases, it's
-	a good idea not to have that channel listed in the directory, and to
-	restrict its public posts to its connections.
+* **Important:** Create a channel in Hubzilla that you want to use for
+    feeds. Don't just post them to your normal channel, because then all
+    your contacts will receive the posts! Keep in mind that you might not be
+    allowed to redistribute the feed contents. In most cases, it's a good idea
+    not to have that channel listed in the directory, and to restrict its
+    public posts to its connections.
 * In the home directory of the user that will run feed2red.pl, create a
 	directory called .feed2red and make it readable only to that user:
 
@@ -61,8 +62,8 @@ chmod 0700 .feed2red
 ```
 [DEFAULTS]
 # replace the values with the configuration you need, obviously
-RedServer=https://your.red.server
-User=your@user.name # email address like at Red login
+RedServer=https://your.hubzilla.server
+User=your@user.name # email address like at Hubzilla login
 Password=yOuRrEdPaSsWoRd
 # the Channel is the short nickname of the channel
 # in https://red.zottel.net/channel/zottelszeug , it would be zottelszeug
@@ -109,14 +110,14 @@ where the FeedURL in the [FEED] section matches.
 **Available config variables:**
 
 **RedServer** (required, default empty)
-The Red server to post to.
+The Hubzilla server to post to.
 
 **User** (required, default empty)
-The user name to use when authenticating to the Red server. This is the
-email address you enter when logging in.
+The user name to use when authenticating to the Hubzilla server. This is
+the email address you enter when logging in.
 
 **Password** (required, default empty)
-The password to use when authenticating to the Red server. Note that a #
+The password to use when authenticating to the Hubzilla server. Note that a #
 in the password will be interpreted as the beginning of a comment. This is
 a known bug, but it will be hard to solve for the case that someone might
 want to write a comment to the end of the password line. For the time
@@ -143,7 +144,7 @@ by setting it to the value UNSET (case matters here!). Doesn't have an
 effect if UseShare is set to anything but Y.
 
 **ShowTitle** (optional, default Y)
-If set to Y, the title of a feed entry will be added to the Red post. If
+If set to Y, the title of a feed entry will be added to the Hubzilla post. If
 set to any other value, e.g. N, the title of a feed entry will be ignored.
 
 **UseContentHash** (optional, default N)
@@ -154,14 +155,14 @@ lead to double posts if a feed contains ads that are different whenever we
 fetch it, or other similarly dynamic content.
 
 **UseShare** (optional, default Y)
-If set to Y, the feed entries will be posted using Red's [share] tag. This
+If set to Y, the feed entries will be posted using Hubzilla's [share] tag. This
 is useful if you want to have several feeds posted to the same channel, as
 you then can see which feed a post originated from. If set to any other
 value, e.g. N, the [share] tag is not used, which makes sense if the
 contents of only one feed are posted to a channel.
 
 **UseQuote** (optional, default N)
-If set to Y, the feed entries will be posted using Red's [quote] tag. This
+If set to Y, the feed entries will be posted using Hubzilla's [quote] tag. This
 is similar to UseShare above, with the difference that the feed name is not
 visible at the post. This can be useful if the source is some aggregator
 that will always show the same feed name, regardless of where the original
@@ -170,14 +171,14 @@ UseQuote, which will lead to a [quote] tag within a [share] tag, but that
 doesn't really make sense, of course.
 
 **ExpireDays** (optional, default N)
-If set to a number, posts from that feed will expire in Red after \<number\>
+If set to a number, posts from that feed will expire in Hubzilla after \<number\>
 days. Otherwise, no expiry date is set (default). Note that this will only
 work if Content Expiration is enabled in the Additional Features settings
 of the channel.
 
 **UseCurrentTime** (optional, default N)
 If set to Y, instead of using the modified or issued dates of the feed,
-the resulting post in Red will be dated with the current time when
+the resulting post in Hubzilla will be dated with the current time when
 feed2red.pl posts it. This is useful if you don't want the posts to be
 moved down in your stream to the actual creation time of the feed item,
 which might be far enough down that you won't ever see them. This has only
@@ -187,7 +188,7 @@ when the feed item was created/modified.
 
 **UseBookmarks** (optional, default Y)
 If set to Y, all [url] tags will be prepended with #^ so that they can be
-used with Red's bookmarks feature. Set to any other value, e.g. N, if you
+used with Hubzilla's bookmarks feature. Set to any other value, e.g. N, if you
 don't like the #^s in the text.
 
 Here's a more complex example for a .conf file:
@@ -201,7 +202,7 @@ channel=feeds
 
 [FEED]
 feedurl=http://hmpf.grmbl.com/feeds/rss/
-# set Red post time to the time when feed2red.pl posts the item, not to
+# set Hubzilla post time to the time when feed2red.pl posts the item, not to
 # the time when the feed item was created/modified
 usecurrenttime=Y
 
@@ -263,7 +264,7 @@ contain unencrypted passwords, though!
 Bugs
 ----
 
-If you encounter any bugs, please report them at the Red Matrix forum
+If you encounter any bugs, please report them at the Hubzilla forum
 feed2red@red.zottel.net (this is NOT an email address!), file an issue at the
 repository at https://github.com/zzottel/feed2red or just fix them and
 create a pull request.
